@@ -5,7 +5,7 @@ import csv
 if __name__ == '__main__' :
     data={}
 
-    reader = PcapReader('files/http.cap')
+    reader = PcapReader('../files/http.cap')
     for p in reader :
         key = p.sprintf('{IP:%IP.src%_%IP.dst%} {IP:%IP.dst%_%IP.src%}').split(' ')
         if key: #check empty list
@@ -23,8 +23,9 @@ if __name__ == '__main__' :
     reader.close()
     print 'Data', data
 
-    with open('files/output.csv', 'wb') as csvfile:
+    with open('output.csv', 'wb') as csvfile:
         writer = csv.writer(csvfile, quotechar='\'', delimiter=',', quoting=csv.QUOTE_MINIMAL)
+        writer.writerow(['source','target','value'])
         for key, val in data.iteritems():
             src, dst = key.split('_')
             writer.writerow([src, dst, val])
