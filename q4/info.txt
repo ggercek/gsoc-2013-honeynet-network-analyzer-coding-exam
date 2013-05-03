@@ -1,0 +1,3 @@
+Resources:
+http://www.sans.org/reading_room/whitepapers/dns/detecting-dns-tunneling_34152
+http://www.slideshare.net/bsideslondon/dns-tunnelling-its-all-in-the-name
