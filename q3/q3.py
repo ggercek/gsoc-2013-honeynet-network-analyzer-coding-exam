@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 import sys
 sys.path.append('../dissectors')
-from dissector import *
+try:
+    from dissector import *
+except ImportError:
+    print 'Can not import dissector module'
+    sys.exit(2)
 
 import argparse
 import datetime
@@ -40,8 +44,12 @@ class IRCAnalyzer() :
             filename2 = '%s_%d_%s_%d'%(dst, dport, src, sport)
             if not self.outFiles.has_key(filename):
                 if not self.outFiles.has_key(filename2):
-                    f = open(outputFolder + '/' + filename, 'w')
-                    self.outFiles[filename] = f
+                    try:
+                        f = open(outputFolder + '/' + filename, 'w')
+                        self.outFiles[filename] = f
+                    except IOError:
+                        print 'Can not create file: ', outputFolder + '/' + filename, '. Please check the output folder.'
+                        sys.exit(2)
                 else:
                     pass
             else:
