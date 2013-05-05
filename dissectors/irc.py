@@ -161,6 +161,7 @@ bind_layers(TCP, IRCReq, dport=6669)
 bind_layers(TCP, IRCReq, dport=7000)
 bind_layers(TCP, IRCReq, dport=194)
 bind_layers(TCP, IRCReq, dport=6697)
+bind_layers(TCP, IRCReq, dport=8001)
 
 
 bind_layers(TCP, IRCRes, sport=6660)
@@ -176,3 +177,4 @@ bind_layers(TCP, IRCRes, sport=6669)
 bind_layers(TCP, IRCRes, sport=7000)
 bind_layers(TCP, IRCRes, sport=194)
 bind_layers(TCP, IRCRes, sport=6697)
+bind_layers(TCP, IRCRes, sport=8001)
