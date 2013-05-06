@@ -18,6 +18,46 @@ class IRCAnalyzer() :
         self.outFiles={}
         pass
 
+    def _generateOutputFile(self, outputFolder, src, sport, dst, dport):
+        """
+        @private
+        Generates output file based on given parameters, if not already exists and store it in self.outFiles
+        @param outputFolder : output Folder to write file
+        @param src          : source IP
+        @param sport        : source port
+        @param dst          : destination IP
+        @param dport        : destination port
+        """
+        filename = '%s_%d_%s_%d'%(src, sport, dst, dport)
+        filename2 = '%s_%d_%s_%d'%(dst, dport, src, sport)
+        if not self.outFiles.has_key(filename):
+            if not self.outFiles.has_key(filename2):
+                try:
+                    f = open(outputFolder + '/' + filename, 'w')
+                    self.outFiles[filename] = f
+                except IOError:
+                    print 'Can not create file: ', outputFolder + '/' + filename, '. Please check the output folder.'
+                    sys.exit(2)
+            else:
+                pass
+        else:
+            pass
+
+
+    def _getOutfile(self, packet):
+        """
+        @private
+        Returns the open file objects to given packet
+        @param packet: a scapy packet object with IP and TCP layers, otherwise function will return None
+        """
+        key = packet.sprintf('{TCP:%r,IP.src%_%r,TCP.sport%_%r,IP.dst%_%r,TCP.dport%} {IP:%r,IP.dst%_%r,TCP.dport%_%r,IP.src%_%r,TCP.sport%}').split(' ')
+        if key: #check empty list
+            if self.outFiles.has_key(key[0]):
+                return self.outFiles[key[0]]
+            elif self.outFiles.has_key(key[1]):
+                return self.outFiles[key[1]]
+        return None
+
 
     def start(self, inputFile, outputFolder):
         """
@@ -40,20 +80,7 @@ class IRCAnalyzer() :
             sport = s[2]
             dport = s[3]
 
-            filename = '%s_%d_%s_%d'%(src, sport, dst, dport)
-            filename2 = '%s_%d_%s_%d'%(dst, dport, src, sport)
-            if not self.outFiles.has_key(filename):
-                if not self.outFiles.has_key(filename2):
-                    try:
-                        f = open(outputFolder + '/' + filename, 'w')
-                        self.outFiles[filename] = f
-                    except IOError:
-                        print 'Can not create file: ', outputFolder + '/' + filename, '. Please check the output folder.'
-                        sys.exit(2)
-                else:
-                    pass
-            else:
-                pass
+            self._generateOutputFile(outputFolder, src, sport, dst, dport)
 
         reader = PcapReader(inputFile)
         # TODO: No need to loop twice! Change the dissector code to add application protocol information to Stream class
@@ -78,18 +105,6 @@ class IRCAnalyzer() :
             outFile.flush()
             outFile.close()
 
-    def _getOutfile(self, packet):
-        """
-        Returns the open file objects to given packet
-        @param packet: a scapy packet object with IP and TCP layers, otherwise function will return None
-        """
-        key = packet.sprintf('{TCP:%r,IP.src%_%r,TCP.sport%_%r,IP.dst%_%r,TCP.dport%} {IP:%r,IP.dst%_%r,TCP.dport%_%r,IP.src%_%r,TCP.sport%}').split(' ')
-        if key: #check empty list
-            if self.outFiles.has_key(key[0]):
-                return self.outFiles[key[0]]
-            elif self.outFiles.has_key(key[1]):
-                return self.outFiles[key[1]]
-        return None
 
 def main():
     """Parse the command line arguments and start the analyzer"""
